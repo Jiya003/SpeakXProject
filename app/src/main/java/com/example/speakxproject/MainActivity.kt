@@ -2,22 +2,22 @@ package com.example.speakxproject
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AbsListView
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.speakxproject.services.MockApiService
-import android.widget.AbsListView
-import com.facebook.shimmer.ShimmerFrameLayout
-
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mockApiService: MockApiService
     private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var loadingText: TextView
     private var currentPage = 0
     private val itemList: MutableList<String> = mutableListOf()
+    private var isLoading = false
+    private var isLastPage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +31,10 @@ class MainActivity : AppCompatActivity() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, itemList)
         listView.adapter = adapter
 
-        // Load first page of data
+        // Set up loading text
+        loadingText = findViewById(R.id.textLoading)
+
+        // Load the first page of data
         loadData()
 
         // Set a scroll listener for pagination
@@ -41,28 +44,38 @@ class MainActivity : AppCompatActivity() {
             override fun onScroll(
                 view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int
             ) {
-                if (firstVisibleItem + visibleItemCount >= totalItemCount && !isLoading) {
+                // Check if we've reached the bottom of the list and aren't already loading data
+                if (!isLoading && !isLastPage && firstVisibleItem + visibleItemCount >= totalItemCount) {
                     loadData()
                 }
             }
         })
     }
 
-    private var isLoading = false
-
     private fun loadData() {
-        val ShimmerFrameLayout: ShimmerFrameLayout = findViewById(R.id.shimmer_view_container)
-
-
         if (isLoading) return
 
         isLoading = true
-        mockApiService.fetchItems(currentPage) { newItems ->
-            itemList.addAll(newItems)
-            adapter.notifyDataSetChanged()
-            currentPage++
-            isLoading = false
-        }
 
+        // Show loading text
+        loadingText.visibility = View.VISIBLE
+
+        // Simulate data fetching
+        mockApiService.fetchItems(currentPage) { newItems ->
+            if (newItems.isEmpty()) {
+                // If no more data, set the last page flag
+                isLastPage = true
+            } else {
+                // Add new items to the list and update the adapter
+                itemList.addAll(newItems)
+                adapter.notifyDataSetChanged()
+                currentPage++
+            }
+
+            isLoading = false
+
+            // Hide loading text
+            loadingText.visibility = View.GONE
+        }
     }
 }

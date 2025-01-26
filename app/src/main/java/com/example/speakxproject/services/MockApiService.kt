@@ -7,13 +7,18 @@ class MockApiService {
 
     // Simulate fetching data from an API with a delay
     fun fetchItems(page: Int, callback: (List<String>) -> Unit) {
-        // Simulate network delay
         Handler(Looper.getMainLooper()).postDelayed({
-            // Return a mock list of data
             val startIndex = page * 10
             val endIndex = startIndex + 9
-            val mockData = (startIndex..endIndex).map { "Item $it" }
+
+            // Simulate last page by returning empty list if no more data
+            val mockData = if (page < 5) { // Assume 5 pages of data
+                (startIndex..endIndex).map { "Item $it" }
+            } else {
+                emptyList()
+            }
+
             callback(mockData)
-        }, 3000) // Simulate a 2-second network delay
+        }, 1500) // Simulated 1.5-second delay
     }
 }
