@@ -1,21 +1,25 @@
 package com.example.speakxproject
 
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.View
-import android.widget.AbsListView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.speakxproject.services.MockApiService
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mockApiService: MockApiService
-    private lateinit var adapter: ArrayAdapter<String>
-    private lateinit var loadingText: TextView
-    private var currentPage = 0
+    private lateinit var adapter: ArrayAdapter<SpannableString>
+    private lateinit var searchBar: EditText
+    private lateinit var listView: ListView
     private val itemList: MutableList<String> = mutableListOf()
+    private val displayedItems: MutableList<SpannableString> = mutableListOf()
+    private var currentPage = 0
     private var isLoading = false
     private var isLastPage = false
 
@@ -26,56 +30,92 @@ class MainActivity : AppCompatActivity() {
         // Initialize MockApiService
         mockApiService = MockApiService()
 
+        // Initialize views
+        searchBar = findViewById(R.id.searchBar)
+        listView = findViewById(R.id.listView)
+        val loadingText: TextView = findViewById(R.id.textLoading)
+
         // Set up ListView and Adapter
-        val listView: ListView = findViewById(R.id.listView)
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, itemList)
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayedItems)
         listView.adapter = adapter
 
-        // Set up loading text
-        loadingText = findViewById(R.id.textLoading)
-
         // Load the first page of data
-        loadData()
+        loadData(loadingText)
 
-        // Set a scroll listener for pagination
+        // Search functionality
+        searchBar.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterItems(s.toString())
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        // Pagination
         listView.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
 
             override fun onScroll(
                 view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int
             ) {
-                // Check if we've reached the bottom of the list and aren't already loading data
                 if (!isLoading && !isLastPage && firstVisibleItem + visibleItemCount >= totalItemCount) {
-                    loadData()
+                    loadData(loadingText)
                 }
             }
         })
     }
 
-    private fun loadData() {
+    private fun loadData(loadingText: TextView) {
         if (isLoading) return
 
         isLoading = true
-
-        // Show loading text
         loadingText.visibility = View.VISIBLE
 
-        // Simulate data fetching
         mockApiService.fetchItems(currentPage) { newItems ->
             if (newItems.isEmpty()) {
-                // If no more data, set the last page flag
                 isLastPage = true
             } else {
-                // Add new items to the list and update the adapter
                 itemList.addAll(newItems)
-                adapter.notifyDataSetChanged()
+                filterItems(searchBar.text.toString()) // Update displayed items
                 currentPage++
             }
 
             isLoading = false
-
-            // Hide loading text
             loadingText.visibility = View.GONE
         }
+    }
+
+    private fun filterItems(query: String) {
+        displayedItems.clear()
+        if (query.isEmpty()) {
+            displayedItems.addAll(itemList.map { SpannableString(it) })
+        } else {
+            val lowerCaseQuery = query.lowercase()
+            for (item in itemList) {
+                val lowerCaseItem = item.lowercase()
+                val spannable = SpannableString(item)
+                val startIndex = lowerCaseItem.indexOf(lowerCaseQuery)
+
+                if (startIndex >= 0) {
+                    // Highlight the matching part
+                    spannable.setSpan(
+                        ForegroundColorSpan(Color.RED), // Highlight color
+                        startIndex,
+                        startIndex + query.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    spannable.setSpan(
+                        StyleSpan(android.graphics.Typeface.BOLD), // Bold text
+                        startIndex,
+                        startIndex + query.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+                displayedItems.add(spannable)
+            }
+        }
+        adapter.notifyDataSetChanged()
     }
 }

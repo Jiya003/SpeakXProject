@@ -3,19 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Search Bar -->
+    <EditText
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search..."
+        android:padding="10dp"
+        android:background="@android:drawable/edit_text"
+        android:inputType="text"/>
+
     <!-- ListView -->
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:dividerHeight="1dp"/>
+        android:dividerHeight="1dp"
+        android:layout_below="@id/searchBar"
+        android:layout_above="@id/textLoading"/>
 
+    <!-- Loading Text -->
     <TextView
         android:id="@+id/textLoading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Loading..."
-        android:layout_margin="20dp"
         android:textColor="@color/darker_grey"
         android:gravity="center"
         android:visibility="gone"
