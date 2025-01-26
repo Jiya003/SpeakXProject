@@ -13,7 +13,7 @@ import com.example.speakxproject.services.MockApiService
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mockApiService: MockApiService
+    private lateinit var mockApiService: MockApiService //For Api service
     private lateinit var adapter: ArrayAdapter<SpannableString>
     private lateinit var searchBar: EditText
     private lateinit var listView: ListView
@@ -27,23 +27,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize MockApiService
+        //Initializing MockApiService
         mockApiService = MockApiService()
 
-        // Initialize views
+        //Initializing views
         searchBar = findViewById(R.id.searchBar)
         listView = findViewById(R.id.listView)
         val loadingText: TextView = findViewById(R.id.textLoading)
 
-        // Set up ListView and Adapter
+        //Setting up the ListView and Adapter
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayedItems)
         listView.adapter = adapter
 
-        // Load the first page of data
+        //Loading the first page of the data
         loadData(loadingText)
 
-        // Search functionality
-        searchBar.addTextChangedListener(object : android.text.TextWatcher {
+        //Implementing the search functionality
+        searchBar.addTextChangedListener(object:android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
 
-        // Pagination
+        //Pagination
         listView.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
 
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                 isLastPage = true
             } else {
                 itemList.addAll(newItems)
-                filterItems(searchBar.text.toString()) // Update displayed items
+                filterItems(searchBar.text.toString()) // Updated the displayed items
                 currentPage++
             }
 
@@ -99,15 +99,14 @@ class MainActivity : AppCompatActivity() {
                 val startIndex = lowerCaseItem.indexOf(lowerCaseQuery)
 
                 if (startIndex >= 0) {
-                    // Highlight the matching part
                     spannable.setSpan(
-                        ForegroundColorSpan(Color.RED), // Highlight color
+                        ForegroundColorSpan(Color.RED),//Highlight color
                         startIndex,
                         startIndex + query.length,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
                     spannable.setSpan(
-                        StyleSpan(android.graphics.Typeface.BOLD), // Bold text
+                        StyleSpan(android.graphics.Typeface.BOLD),//Bold text
                         startIndex,
                         startIndex + query.length,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
