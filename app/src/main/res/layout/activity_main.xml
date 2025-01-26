@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Search Bar -->
+    <!-- I am implementing the Search Bar Using Edit text -->
     <EditText
         android:id="@+id/searchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search..."
+        android:hint="You can Search items..."
         android:padding="10dp"
         android:background="@android:drawable/edit_text"
         android:inputType="text"/>
 
-    <!-- ListView -->
+    <!-- ListView for listing -->
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
         android:layout_below="@id/searchBar"
         android:layout_above="@id/textLoading"/>
 
-    <!-- Loading Text -->
+    <!-- Loading Text when data is being fetch-->
     <TextView
         android:id="@+id/textLoading"
         android:layout_width="match_parent"
