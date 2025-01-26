@@ -1,5 +1,6 @@
 # Android Pagination and Search Feature Implementation
 
+So hello, Developers!!! 
 ## Overview
 This project demonstrates how to implement pagination and a search bar in an Android app using a `ListView`. It allows users to search for items in the list, dynamically load more data when scrolling, and highlight searched text for better visibility.
 
@@ -42,8 +43,9 @@ This project demonstrates how to implement pagination and a search bar in an And
 - For highlighting, the app uses `SpannableString` to customize text appearance.
 
 ## Future Enhancements
-- Add a shimmer effect for better UX while loading data.
-- Replace `MockApiService` with a real backend API service.
+- Adding a shimmer effect for better UX while loading data.
+- Replacing `MockApiService` with a real backend API service.
+- Using MVVM architecture
 
 ## License
 This code is free to use for educational and personal projects. Pull requests are welcome.
